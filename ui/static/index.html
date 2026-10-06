@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurelia · Clinical Intelligence</title>
+<meta name="description" content="Aurelia – clinical intelligence workspace over synthetic EHR data.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23e8c987'/%3E%3Cpath d='M32 14l10 30H22z' fill='%230b0f1c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="shell">
+  <aside class="rail glass" aria-label="Primary">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e2ac"/><stop offset="1" stop-color="#b98b3e"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="29" fill="none" stroke="url(#g)" stroke-width="2.5"/>
+        <path d="M32 12 46 50H38l-2.6-7.6H28.6L26 50h-8z M30.4 36.4h3.2L32 30.2z" fill="url(#g)"/>
+      </svg>
+      <div><b>Aurelia</b><small>Clinical Intelligence</small></div>
+    </div>
+    <nav id="nav">
+      <button data-view="overview" class="on"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z"/></svg><span>Command Center</span><kbd>1</kbd></button>
+      <button data-view="patients"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM8 12a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm8 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4zM8 14c-.3 0-.6 0-1 .1C5.2 14.5 2 15.6 2 18v2h5v-2c0-1.2.6-2.3 1.600-3.200A9 9 0 0 0 8 14z"/></svg><span>Patients</span><kbd>2</kbd></button>
+      <button data-view="ask"><svg viewBox="0 0 24 24"><path d="M12 2l1.800 5.400L19 9l-5.200 1.600L12 16l-1.800-5.400L5 9l5.200-1.600zM19 14l.9 2.600L22.500 17.500l-2.600.9L19 21l-.9-2.600-2.600-.9 2.600-.9z"/></svg><span>Ask Aurelia</span><kbd>3</kbd></button>
+      <button data-view="map"><svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7zm0 2.300 6.500 3.600L12 11.500 5.500 7.900zM5 9.600l6 3.300v6.600l-6-3.300zm8 9.900v-6.600l6-3.300v6.600z"/></svg><span>Cohort Map</span><kbd>4</kbd></button>
+      <button data-view="lab"><svg viewBox="0 0 24 24"><path d="M9 2v6.200L4.300 18A2.500 2.500 0 0 0 6.600 21.500h10.800a2.500 2.500 0 0 0 2.300-3.500L15 8.200V2zm2 2h2v5l4.500 9.500H6.500L11 9z"/></svg><span>RAG Lab</span><kbd>5</kbd></button>
+      <button data-view="audit"><svg viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.500 3.800 10.700 9 12 5.200-1.300 9-6.500 9-12V5zm-1 15-4-4 1.400-1.400L11 13.200l4.600-4.600L17 10z"/></svg><span>Audit Trail</span><kbd>6</kbd></button>
+    </nav>
+    <div class="rail-foot">
+      <button class="chip" id="palette-btn"><span>Search anything</span><kbd>Ctrl K</kbd></button>
+      <button class="chip" id="theme-btn" aria-label="Toggle theme"><span id="theme-label">Light mode</span></button>
+      <div class="status"><i id="dot"></i><span id="status-text">connecting…</span></div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header class="top">
+      <div>
+        <h1 id="title">Command Center</h1>
+        <p id="subtitle">A live view of the synthetic cohort.</p>
+      </div>
+      <div class="badges"><span class="pill gold">Synthetic data only</span><span class="pill" id="src-pill"></span></div>
+    </header>
+
+    <!-- OVERVIEW -->
+    <section id="v-overview" class="view on">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="glass tilt card"><h3>Condition prevalence</h3><div id="c-cond"></div></div>
+        <div class="glass tilt card"><h3>Cohort risk bands</h3><div id="c-risk" class="donut-wrap"></div></div>
+      </div>
+      <div class="grid3">
+        <div class="glass tilt card"><h3>Age distribution</h3><div id="c-age"></div></div>
+        <div class="glass tilt card"><h3>Safety alerts</h3><div id="c-alerts"></div></div>
+        <div class="glass tilt card"><h3>Highest-priority patients</h3><div id="c-top"></div></div>
+      </div>
+    </section>
+
+    <!-- PATIENTS -->
+    <section id="v-patients" class="view">
+      <div class="toolbar glass">
+        <input id="p-search" type="search" placeholder="Filter by name, ID or condition…" autocomplete="off">
+        <div class="seg" id="p-sort"><button class="on" data-s="risk">By risk</button><button data-s="name">A–Z</button></div>
+      </div>
+      <div class="plist" id="plist"></div>
+    </section>
+
+    <!-- ASK -->
+    <section id="v-ask" class="view">
+      <div class="ask-grid">
+        <div class="glass ask-main">
+          <form id="ask-form" autocomplete="off">
+            <div class="ask-input">
+              <svg viewBox="0 0 24 24"><path d="M12 2l1.800 5.400L19 9l-5.200 1.600L12 16l-1.800-5.400L5 9l5.200-1.600z"/></svg>
+              <input id="q" placeholder="Ask a clinical question about the record…" maxlength="500">
+              <button class="btn" type="submit">Ask</button>
+            </div>
+            <div class="opts">
+              <label>Scope <select id="scope"><option value="">Entire cohort</option></select></label>
+              <label>Strategy <select id="strategy"><option value="adaptive">Adaptive router</option></select></label>
+              <button type="button" class="chip-btn" id="compare-btn">Compare strategies</button>
+              <button type="button" class="chip-btn" id="reset-chat">New conversation</button>
+              <label class="switch"><input type="checkbox" id="redact"><i></i><span>Redact PHI</span></label>
+            </div>
+          </form>
+          <div class="suggest" id="suggest"></div>
+          <div id="strategy-hint" class="muted small"></div>
+          <div id="answer"></div>
+          <div id="compare"></div>
+        </div>
+        <div class="glass ask-side"><h3>Evidence</h3><p class="muted small">Every statement links back to a source chunk. Ranks show how BM25 and dense search each placed it.</p><div id="evidence"><div class="empty">Ask a question to see the supporting record excerpts.</div></div></div>
+      </div>
+    </section>
+
+    <!-- COHORT MAP -->
+    <section id="v-map" class="view">
+      <div class="map-grid">
+        <div class="glass card map-card"><div class="audit-head"><h3>Patient similarity space</h3><span class="pill" id="map-info"></span></div>
+          <p class="muted small">Each point is a patient, positioned by PCA over conditions, drugs, labs and demographics. Colour = cluster (k-means). Drag to rotate, click a point to open the patient.</p>
+          <canvas id="map3d" width="900" height="560" aria-label="3D patient similarity map"></canvas></div>
+        <div class="glass card"><h3>Clusters</h3><div id="map-legend"></div><h3 style="margin-top:20px">Knowledge graph</h3><div id="graph-stats"></div></div>
+      </div>
+    </section>
+
+    <!-- RAG LAB -->
+    <section id="v-lab" class="view">
+      <div class="glass card"><h3>Retrieval strategies</h3><p class="muted small">Thirteen ways of answering from the same record. Pick one in Ask Aurelia, or let the adaptive router decide.</p><div class="strat-grid" id="strat-grid"></div></div>
+      <div class="glass card" style="margin-top:20px"><div class="audit-head"><h3>Benchmark</h3><button class="chip-btn" id="bench-run">Re-run</button></div>
+        <p class="muted small" id="bench-note">Scored against an independent brute-force ground truth over the synthetic cohort. Questions are template-generated, so treat this as a regression and comparison harness, not clinical validation.</p>
+        <div id="bench"><div class="empty">Loading…</div></div></div>
+    </section>
+
+    <!-- AUDIT -->
+    <section id="v-audit" class="view">
+      <div class="glass card"><div class="audit-head"><h3>Hash-chained activity log</h3><span id="chain" class="pill"></span></div>
+        <p class="muted small">Each entry embeds the SHA-256 of the one before it. Altering any line breaks the chain from that point.</p>
+        <div id="audit-list"></div></div>
+    </section>
+
+    <footer class="foot">Aurelia is a portfolio and research project running on fabricated records. It is not a medical device and must not be used for clinical decisions.</footer>
+  </main>
+</div>
+
+<!-- Patient drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer glass" id="drawer" aria-hidden="true"><button class="x" id="drawer-x" aria-label="Close">×</button><div id="drawer-body"></div></aside>
+
+<!-- Command palette -->
+<div class="palette-wrap" id="palette-wrap"><div class="palette glass"><input id="palette-in" placeholder="Jump to a view or patient…"><div id="palette-list"></div></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="/assets/app.js" defer></script>
+</body>
+</html>

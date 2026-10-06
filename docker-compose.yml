@@ -1,0 +1,20 @@
+# Two services: the synthetic EHR and the Aurelia workspace that ingests from it over HTTP.
+services:
+  mock-ehr:
+    build: .
+    command: ["uvicorn", "mock_ehr.server:app", "--host", "0.0.0.0", "--port", "8100"]
+    environment:
+      MOCK_EHR_TOKEN: ${MOCK_EHR_TOKEN:-dev-token-change-me}
+    ports: ["8100:8100"]
+  aurelia:
+    build: .
+    depends_on: [mock-ehr]
+    environment:
+      AURELIA_EHR_URL: http://mock-ehr:8100
+      AURELIA_EHR_TOKEN: ${MOCK_EHR_TOKEN:-dev-token-change-me}
+      AURELIA_LLM: ${AURELIA_LLM:-extractive}
+      AURELIA_OLLAMA_URL: ${AURELIA_OLLAMA_URL:-http://host.docker.internal:11434}
+    volumes: ["aurelia-data:/app/data"]
+    ports: ["8000:8000"]
+volumes:
+  aurelia-data:

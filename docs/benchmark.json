@@ -1,0 +1,627 @@
+{
+ "suites": [
+  {
+   "id": "exact",
+   "title": "Exact-term questions",
+   "metric": "recall@5",
+   "secondary": "MRR",
+   "n": 200,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "bm25",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "naive",
+     "value": 0.995,
+     "secondary": 0.95
+    },
+    {
+     "strategy": "hybrid",
+     "value": 1.0,
+     "secondary": 0.982
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.995,
+     "secondary": 0.969
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.995,
+     "secondary": 0.796
+    },
+    {
+     "strategy": "rerank",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "mmr",
+     "value": 1.0,
+     "secondary": 0.98
+    },
+    {
+     "strategy": "window",
+     "value": 0.995,
+     "secondary": 0.98
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.72,
+     "secondary": 0.384
+    },
+    {
+     "strategy": "corrective",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "graph",
+     "value": 0.125,
+     "secondary": 0.062
+    },
+    {
+     "strategy": "agentic",
+     "value": 1.0,
+     "secondary": 0.982
+    }
+   ]
+  },
+  {
+   "id": "lay",
+   "title": "Lay-language questions",
+   "metric": "recall@5",
+   "secondary": "MRR",
+   "n": 77,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 0.896,
+     "secondary": 0.863
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.818,
+     "secondary": 0.689
+    },
+    {
+     "strategy": "naive",
+     "value": 0.87,
+     "secondary": 0.643
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.896,
+     "secondary": 0.722
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.909,
+     "secondary": 0.883
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.961,
+     "secondary": 0.882
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.896,
+     "secondary": 0.84
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.909,
+     "secondary": 0.748
+    },
+    {
+     "strategy": "window",
+     "value": 0.753,
+     "secondary": 0.682
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.896,
+     "secondary": 0.808
+    },
+    {
+     "strategy": "corrective",
+     "value": 0.883,
+     "secondary": 0.837
+    },
+    {
+     "strategy": "graph",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.857,
+     "secondary": 0.714
+    }
+   ]
+  },
+  {
+   "id": "cohort",
+   "title": "Cohort questions (unscoped)",
+   "metric": "set F1",
+   "secondary": "recall",
+   "n": 40,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.752,
+     "secondary": 0.875
+    },
+    {
+     "strategy": "naive",
+     "value": 0.248,
+     "secondary": 0.437
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.549,
+     "secondary": 0.876
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.549,
+     "secondary": 0.867
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.412,
+     "secondary": 0.699
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.56,
+     "secondary": 0.875
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.501,
+     "secondary": 0.835
+    },
+    {
+     "strategy": "window",
+     "value": 0.583,
+     "secondary": 0.735
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.538,
+     "secondary": 0.868
+    },
+    {
+     "strategy": "corrective",
+     "value": 0.548,
+     "secondary": 0.791
+    },
+    {
+     "strategy": "graph",
+     "value": 1.0,
+     "secondary": 1.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.956,
+     "secondary": 0.956
+    }
+   ]
+  },
+  {
+   "id": "cohort2",
+   "title": "Cohort questions, paraphrased",
+   "metric": "set F1",
+   "secondary": "recall",
+   "n": 16,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 0.656,
+     "secondary": 0.68
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.624,
+     "secondary": 0.814
+    },
+    {
+     "strategy": "naive",
+     "value": 0.264,
+     "secondary": 0.482
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.508,
+     "secondary": 0.782
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.511,
+     "secondary": 0.789
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.572,
+     "secondary": 0.899
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.524,
+     "secondary": 0.836
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.477,
+     "secondary": 0.784
+    },
+    {
+     "strategy": "window",
+     "value": 0.516,
+     "secondary": 0.595
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.511,
+     "secondary": 0.825
+    },
+    {
+     "strategy": "corrective",
+     "value": 0.345,
+     "secondary": 0.398
+    },
+    {
+     "strategy": "graph",
+     "value": 0.818,
+     "secondary": 0.875
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.588,
+     "secondary": 0.574
+    }
+   ]
+  },
+  {
+   "id": "latest",
+   "title": "\u201cLatest value\u201d questions",
+   "metric": "hit@1",
+   "secondary": "",
+   "n": 80,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 0.975
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.325
+    },
+    {
+     "strategy": "naive",
+     "value": 0.325
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.338
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.338
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.388
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.887
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.338
+    },
+    {
+     "strategy": "window",
+     "value": 0.338
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.975
+    },
+    {
+     "strategy": "corrective",
+     "value": 0.887
+    },
+    {
+     "strategy": "graph",
+     "value": 0.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.338
+    }
+   ]
+  },
+  {
+   "id": "window",
+   "title": "\u201cLast 6 months\u201d questions",
+   "metric": "window precision@5",
+   "secondary": "",
+   "n": 60,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 0.745
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.323
+    },
+    {
+     "strategy": "naive",
+     "value": 0.269
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.281
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.237
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.24
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.285
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.261
+    },
+    {
+     "strategy": "window",
+     "value": 0.4
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.745
+    },
+    {
+     "strategy": "corrective",
+     "value": 0.285
+    },
+    {
+     "strategy": "graph",
+     "value": 0.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.306
+    }
+   ]
+  },
+  {
+   "id": "abstain",
+   "title": "Unanswerable questions",
+   "metric": "correct abstain",
+   "secondary": "false abstain \u2193",
+   "n": 200,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 1.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "bm25",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "naive",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "hybrid",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "multiquery",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "hyde",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "rerank",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "mmr",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "window",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "temporal",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "corrective",
+     "value": 1.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "graph",
+     "value": 0.0,
+     "secondary": 0.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 0.535,
+     "secondary": 0.0
+    }
+   ]
+  },
+  {
+   "id": "faithful",
+   "title": "Answer faithfulness",
+   "metric": "supported lines",
+   "secondary": "",
+   "n": 100,
+   "rows": [
+    {
+     "strategy": "adaptive",
+     "value": 1.0
+    },
+    {
+     "strategy": "bm25",
+     "value": 1.0
+    },
+    {
+     "strategy": "naive",
+     "value": 1.0
+    },
+    {
+     "strategy": "hybrid",
+     "value": 1.0
+    },
+    {
+     "strategy": "multiquery",
+     "value": 1.0
+    },
+    {
+     "strategy": "hyde",
+     "value": 1.0
+    },
+    {
+     "strategy": "rerank",
+     "value": 1.0
+    },
+    {
+     "strategy": "mmr",
+     "value": 1.0
+    },
+    {
+     "strategy": "window",
+     "value": 1.0
+    },
+    {
+     "strategy": "temporal",
+     "value": 1.0
+    },
+    {
+     "strategy": "corrective",
+     "value": 1.0
+    },
+    {
+     "strategy": "graph",
+     "value": 1.0
+    },
+    {
+     "strategy": "agentic",
+     "value": 1.0
+    }
+   ]
+  }
+ ],
+ "strategies": [
+  {
+   "id": "adaptive",
+   "name": "Adaptive router",
+   "family": "Router"
+  },
+  {
+   "id": "bm25",
+   "name": "Keyword (BM25)",
+   "family": "Baseline"
+  },
+  {
+   "id": "naive",
+   "name": "Dense vectors",
+   "family": "Baseline"
+  },
+  {
+   "id": "hybrid",
+   "name": "Hybrid (BM25 + dense)",
+   "family": "Baseline"
+  },
+  {
+   "id": "multiquery",
+   "name": "Multi-query + decomposition",
+   "family": "Retrieval"
+  },
+  {
+   "id": "hyde",
+   "name": "HyDE (hypothetical document)",
+   "family": "Retrieval"
+  },
+  {
+   "id": "rerank",
+   "name": "Hybrid + rerank",
+   "family": "Retrieval"
+  },
+  {
+   "id": "mmr",
+   "name": "Diverse (MMR)",
+   "family": "Retrieval"
+  },
+  {
+   "id": "window",
+   "name": "Small-to-big (context window)",
+   "family": "Retrieval"
+  },
+  {
+   "id": "temporal",
+   "name": "Temporal RAG",
+   "family": "Reasoning"
+  },
+  {
+   "id": "corrective",
+   "name": "Corrective / self-grading RAG",
+   "family": "Reasoning"
+  },
+  {
+   "id": "graph",
+   "name": "Graph / cohort RAG",
+   "family": "Structured"
+  },
+  {
+   "id": "agentic",
+   "name": "Agentic RAG",
+   "family": "Agentic"
+  }
+ ],
+ "quick": false,
+ "patients": 60,
+ "note": "Template-generated synthetic questions; a comparison harness, not clinical validation."
+}

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aurelia"
+version = "1.0.0"
+description = "Aurelia - a clinical intelligence workspace: hybrid retrieval, grounded answers, safety alerts and tamper-evident audit over synthetic EHR data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "numpy>=1.26", "httpx>=0.27", "pydantic>=2.6"]
+
+[project.optional-dependencies]
+semantic = ["sentence-transformers>=3.0"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+aurelia = "aurelia.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["aurelia*", "mock_ehr*", "eval*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B"]
+ignore = ["E501", "E701", "E702", "B008", "B905"]
