@@ -9,6 +9,7 @@ import hashlib
 import json
 import threading
 import time
+from collections import deque
 from pathlib import Path
 
 GENESIS = "0" * 64
@@ -47,9 +48,9 @@ class AuditLog:
     def entries(self, limit: int = 50) -> list[dict]:
         if not self.path.exists():
             return []
-        with self.path.open() as f:
-            rows = [json.loads(line) for line in f if line.strip()]
-        return rows[-limit:][::-1]
+        with self.path.open() as f:   # bounded deque: memory stays O(limit) however long the log grows
+            tail = deque((line for line in f if line.strip()), maxlen=max(limit, 0))
+        return [json.loads(line) for line in tail][::-1]
 
     def verify(self) -> dict:
         prev, n = GENESIS, 0

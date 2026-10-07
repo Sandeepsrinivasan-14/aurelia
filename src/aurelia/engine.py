@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from collections import OrderedDict
 
 import httpx
 
@@ -39,16 +40,28 @@ class Engine:
         self.booted = time.time()
         self._space = None
         self._benchmark: dict | None = None
+        # Records never change after boot, so per-patient analytics are computed once and reused.
+        self._risk_rows: dict[str, dict] | None = None
+        self._views: dict[str, dict] = {}
+        self._llm_memo: OrderedDict[str, str] = OrderedDict()
 
-    # optional LLM used for HyDE rewriting; failures degrade to templates
+    # optional LLM used for HyDE rewriting; failures degrade to templates (and are not memoised, so a
+    # recovered Ollama is picked up on the next call)
     def _llm(self, prompt: str) -> str | None:
+        if prompt in self._llm_memo:
+            self._llm_memo.move_to_end(prompt)
+            return self._llm_memo[prompt]
         try:
             r = httpx.post(f"{self.settings.ollama_url.rstrip('/')}/api/generate", timeout=30,
                            json={"model": self.settings.ollama_model, "prompt": prompt, "stream": False})
             r.raise_for_status()
-            return r.json()["response"].strip()
+            out = r.json()["response"].strip()
         except Exception:
             return None
+        self._llm_memo[prompt] = out
+        if len(self._llm_memo) > 256:
+            self._llm_memo.popitem(last=False)
+        return out
 
     def stats(self) -> dict:
         return {"patients": len(self.patients), "chunks": len(self.index.chunks),
@@ -133,9 +146,15 @@ class Engine:
         p = self.patients.get(pid)
         if not p:
             return None
+        self.audit.record("view_patient", patient_id=pid)
+        if pid not in self._views:
+            self._views[pid] = self._build_view(p)
+        return self._views[pid]
+
+    @staticmethod
+    def _build_view(p: dict) -> dict:
         from .analytics.forecast import anomaly, forecast
         from .nlp.ner import summarize_notes
-        self.audit.record("view_patient", patient_id=pid)
         series = clinical.lab_series(p)
         labs = {}
         for t, pts in series.items():
@@ -149,15 +168,23 @@ class Engine:
             "entities": summarize_notes(p["notes"]),
         }
 
+    def _patient_rows(self) -> dict[str, dict]:
+        if self._risk_rows is None:
+            rows = {}
+            for p in self.records:
+                r = clinical.risk_score(p)
+                rows[p["patient_id"]] = {"patient_id": p["patient_id"], "name": p["name"], "age": p["age"], "sex": p["sex"],
+                                         "conditions": [d["condition"] for d in p["diagnoses"]], "risk": r["score"],
+                                         "band": r["band"], "alerts": len(clinical.alerts(p))}
+            self._risk_rows = rows
+        return self._risk_rows
+
     def patient_list(self, q: str = "", sort: str = "risk") -> list[dict]:
         rows = []
         for p in self.records:
             if q and q.lower() not in (p["name"] + p["patient_id"] + " ".join(d["condition"] for d in p["diagnoses"])).lower():
                 continue
-            r = clinical.risk_score(p)
-            rows.append({"patient_id": p["patient_id"], "name": p["name"], "age": p["age"], "sex": p["sex"],
-                         "conditions": [d["condition"] for d in p["diagnoses"]], "risk": r["score"], "band": r["band"],
-                         "alerts": len(clinical.alerts(p))})
+            rows.append(dict(self._patient_rows()[p["patient_id"]]))
         rows.sort(key=lambda r: (-r["risk"], r["name"]) if sort == "risk" else r["name"])
         return rows
 

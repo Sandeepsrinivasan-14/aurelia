@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from collections import Counter, defaultdict
+from collections import Counter, OrderedDict, defaultdict
 from dataclasses import dataclass
 
 import numpy as np
@@ -51,6 +51,11 @@ class Hit:
 
 
 class HybridIndex:
+    # Retrieval results are pure functions of (query, k, patient, mode) because the index never changes after
+    # construction, so repeated identical searches within a question (multi-query, corrective retries, the
+    # adaptive fallback) are served from this bounded cache instead of rescanning BM25 and the dense matrix.
+    CACHE_SIZE = 256
+
     def __init__(self, chunks: list[Chunk], embedder: HashingEmbedder | None = None):
         self.chunks = chunks
         self.embedder = (embedder or HashingEmbedder()).fit([c.text for c in chunks])
@@ -63,25 +68,41 @@ class HybridIndex:
             self.by_id[c.chunk_id] = i
         dates = [c.date for c in chunks if c.date]
         self.asof: str = max(dates) if dates else "1970-01-01"   # "today" for temporal reasoning
+        self._cache: OrderedDict[tuple, list[Hit]] = OrderedDict()
 
     def get(self, chunk_id: str) -> Chunk:
         return self.chunks[self.by_id[chunk_id]]
+
+    def _candidates(self, allowed: set[int] | None) -> np.ndarray:
+        return np.arange(len(self.chunks)) if allowed is None else np.fromiter(allowed, dtype=int)
 
     def dense_search(self, vec, k: int = 6, patient_id: str | None = None) -> list[Hit]:
         """Nearest chunks to an arbitrary vector (used by HyDE)."""
         allowed = self._allowed(patient_id)
         if allowed is not None and not allowed:
             return []
-        sims = self.matrix @ vec
-        idx = np.arange(len(self.chunks)) if allowed is None else np.fromiter(allowed, dtype=int)
-        order = idx[np.argsort(-sims[idx])][:k]
-        return [Hit(self.chunks[int(i)], round(float(sims[i]), 4), None, r + 1) for r, i in enumerate(order) if sims[i] > 0]
+        idx = self._candidates(allowed)
+        sims = self.matrix[idx] @ vec                      # score only the candidate rows
+        order = np.argsort(-sims)[:k]
+        return [Hit(self.chunks[int(idx[p])], round(float(sims[p]), 4), None, r + 1)
+                for r, p in enumerate(order) if sims[p] > 0]
 
     def _allowed(self, patient_id: str | None) -> set[int] | None:
         return set(self.by_patient.get(patient_id, [])) if patient_id else None
 
     def search(self, query: str, k: int = 6, patient_id: str | None = None, mode: str = "hybrid",
                rrf_k: int = 60) -> list[Hit]:
+        key = (query, k, patient_id, mode, rrf_k)
+        if key in self._cache:
+            self._cache.move_to_end(key)
+            return list(self._cache[key])
+        hits = self._search(query, k, patient_id, mode, rrf_k)
+        self._cache[key] = hits
+        if len(self._cache) > self.CACHE_SIZE:
+            self._cache.popitem(last=False)
+        return list(hits)
+
+    def _search(self, query: str, k: int, patient_id: str | None, mode: str, rrf_k: int) -> list[Hit]:
         allowed = self._allowed(patient_id)
         if allowed is not None and not allowed:
             return []
@@ -90,10 +111,10 @@ class HybridIndex:
         bm_rank = {i: r for r, (i, _) in enumerate(sorted(bm.items(), key=lambda x: -x[1]))}
 
         qv = self.embedder.encode([query], is_query=True)[0]
-        sims = self.matrix @ qv
-        idx = np.arange(len(self.chunks)) if allowed is None else np.fromiter(allowed, dtype=int)
-        order = idx[np.argsort(-sims[idx])]
-        dense_rank = {int(i): r for r, i in enumerate(order[:200]) if sims[i] > 0}
+        idx = self._candidates(allowed)
+        sims = self.matrix[idx] @ qv                       # score only the candidate rows
+        order = np.argsort(-sims)[:200]
+        dense_rank = {int(idx[p]): r for r, p in enumerate(order) if sims[p] > 0}
 
         if mode == "bm25":
             fused = {i: 1.0 / (rrf_k + r) for i, r in bm_rank.items()}
